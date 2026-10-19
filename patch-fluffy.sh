@@ -50,5 +50,5 @@ done
 [[ -f "$ROOT/bin/FluffyModManager-Mesa.exe" ]] || { echo "Bundled launcher binary missing: $ROOT/bin/FluffyModManager-Mesa.exe" >&2; exit 1; }
 cp -p "$ROOT/bin/FluffyModManager-Mesa.exe" "$FLUFFY_DIR/FluffyModManager-Mesa.exe"
 python3 "$ROOT/patch_trainer_guard.py" "$FLUFFY_DIR/Modmanager.exe"
-echo "Installed Mesa 26.2.4 x64 DLLs, patched the trainer scan guard, and created: $FLUFFY_DIR/FluffyModManager-Mesa.exe"
+echo "Installed Mesa 26.2.4 x64 DLLs, installed the bounded trainer scanner, and created: $FLUFFY_DIR/FluffyModManager-Mesa.exe"
 echo "Run this EXE through the same Wine/NotProton prefix as the game."

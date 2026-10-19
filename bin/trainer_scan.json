@@ -1,0 +1,30 @@
+{
+  "size": 456,
+  "sha256": "5ffa3b37cffec7033b965688397bde2829b4de4cf1fbec94780ae52dd0503b47",
+  "relocations": [
+    {
+      "offset": 60,
+      "symbol": "fluffy_gamehandle"
+    },
+    {
+      "offset": 67,
+      "symbol": "fluffy_gamebase"
+    },
+    {
+      "offset": 104,
+      "symbol": "__imp_VirtualAlloc"
+    },
+    {
+      "offset": 141,
+      "symbol": "__imp_VirtualQueryEx"
+    },
+    {
+      "offset": 293,
+      "symbol": "__imp_ReadProcessMemory"
+    },
+    {
+      "offset": 412,
+      "symbol": "__imp_VirtualFree"
+    }
+  ]
+}
