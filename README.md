@@ -14,7 +14,7 @@ Replaces Fluffy’s unsafe trainer memory scanner with bounded reads, downloads 
 
 3. The script creates `FluffyModManager-Mesa.exe` in that exact folder. Launch that EXE using the same Wine/NotProton/CrossOver environment that runs your game.
 
-The script automatically downloads the pinned official Mesa 26.2.4 MinGW x64 release, verifies its SHA-256, extracts the runtime, and installs the required DLLs beside Fluffy. Existing DLLs are backed up as `.bak` before replacement. macOS's built-in `tar` is used for extraction; if unavailable for this archive, install 7-Zip with `brew install sevenzip` and rerun.
+The script checks for all four required Mesa DLLs in the target folder first. If they are already present, it skips the Mesa download and leaves them untouched. If any are missing, it downloads the pinned official Mesa 26.2.4 MinGW x64 release, verifies its SHA-256, extracts the runtime, and installs the required DLLs beside Fluffy. Existing DLLs are backed up as `.bak` before replacement. macOS's built-in `tar` is used for extraction; if unavailable for this archive, install 7-Zip with `brew install sevenzip` and rerun.
 
 The trainer patch now recognizes the real scanner shared by stock **3.083 and 3.084**. The old 13-byte signature in this repository was absent from both stock executables; its error message did not mean the displayed version was wrong. Recognition now checks the complete scanner structure, its API imports, its game-context references, and x64 unwind metadata while allowing relocated addresses to differ. This permits supported rebuilds without depending on fixed code addresses or version labels.
 
@@ -34,7 +34,7 @@ Run Fluffy and the game in the **same Wine prefix/bottle**. A trainer reporting 
 
 ## What the generated EXE does
 
-- Sets `WINEDLLOVERRIDES=opengl32=n,b` and `GALLIUM_DRIVER=llvmpipe` for Fluffy.
+- Writes `opengl32=native,builtin` to the prefix's `HKCU\Software\Wine\AppDefaults\Modmanager.exe\DllOverrides` before launch, and passes `WINEDLLOVERRIDES=opengl32=native,builtin` plus `GALLIUM_DRIVER=llvmpipe` to Fluffy.
 - Starts `Modmanager.exe` from the same folder and inherits the caller's Wine prefix/container environment.
 - Does not modify the game or any CrossOver bottle.
 

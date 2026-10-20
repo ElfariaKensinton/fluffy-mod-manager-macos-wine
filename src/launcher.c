@@ -9,13 +9,27 @@ static void fail(const wchar_t *message) {
     MessageBoxW(NULL, message, L"Fluffy Mod Manager launcher", MB_OK | MB_ICONERROR);
 }
 
+static BOOL set_opengl_override(void) {
+    HKEY key;
+    const wchar_t *subkey = L"Software\\Wine\\AppDefaults\\Modmanager.exe\\DllOverrides";
+    const wchar_t *value = L"native,builtin";
+    LONG status = RegCreateKeyExW(HKEY_CURRENT_USER, subkey, 0, NULL, 0,
+                                  KEY_SET_VALUE, NULL, &key, NULL);
+    if (status != ERROR_SUCCESS) return FALSE;
+    status = RegSetValueExW(key, L"opengl32", 0, REG_SZ,
+                            (const BYTE *)value,
+                            (DWORD)((wcslen(value) + 1) * sizeof(wchar_t)));
+    RegCloseKey(key);
+    return status == ERROR_SUCCESS;
+}
+
 static wchar_t *make_environment(void) {
     LPWCH old = GetEnvironmentStringsW();
     if (!old) return NULL;
     SIZE_T capacity = 32768, used = 0;
     wchar_t *block = (wchar_t *)calloc(capacity, sizeof(wchar_t));
     if (!block) { FreeEnvironmentStringsW(old); return NULL; }
-    const wchar_t *vars[] = { L"WINEDLLOVERRIDES=opengl32=n,b", L"GALLIUM_DRIVER=llvmpipe" };
+    const wchar_t *vars[] = { L"WINEDLLOVERRIDES=opengl32=native,builtin", L"GALLIUM_DRIVER=llvmpipe" };
     const size_t keys[] = { 16, 14 };
     for (LPWCH p = old; *p; p += wcslen(p) + 1) {
         BOOL replace = FALSE;
@@ -38,6 +52,10 @@ static wchar_t *make_environment(void) {
 
 int WINAPI wWinMain(HINSTANCE instance, HINSTANCE previous, PWSTR command_line, int show) {
     (void)instance; (void)previous; (void)command_line; (void)show;
+    if (!set_opengl_override()) {
+        fail(L"Could not set the Wine opengl32 override for Modmanager.exe.");
+        return 1;
+    }
     wchar_t folder[MAX_PATH];
     DWORD n = GetModuleFileNameW(NULL, folder, MAX_PATH);
     if (!n || n >= MAX_PATH) { fail(L"Could not determine the launcher folder."); return 1; }
